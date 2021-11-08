@@ -1,0 +1,57 @@
+# --- Each agent has risk level controller given history data, and the risk controller trained locally ---
+
+# CVaR policy + CVaR QMIX loss + individual Mixture of Quantiles distributional loss + 
+
+# use epsilon greedy action selector
+action_selector: "epsilon_greedy"
+epsilon_start: 1.0
+epsilon_finish: 0.05
+epsilon_anneal_time: 50000
+
+runner: "episode"
+
+buffer_size: 5000
+
+# update the target network every {} episodes
+target_update_interval: 200
+
+# use the Q_Learner to train
+agent_output_type: "q"
+mac: "risk_mac"
+learner: "rmix_learner"
+double_q: True
+agent: "rnn_agent_rmix" # rmix_v2
+mixer: "rmix"
+mixing_embed_dim: 48
+hypernet_layers: 2
+hypernet_embed: 64
+lr: 0.0005
+
+# RMIX configurations
+num_atoms: 100  # follow the optimizer used in the QR-DQN paper
+use_masked_out_distribution: True   # use the chosen part to update the distribution
+use_masked_out_distribution_real: False # use the chosen part to update the distribution, not use the maskout to zeros
+qr_update_interval: 1000
+start_to_update_qr: 100000
+optimizer: "Adam" # follow the optimizer used in the QR-DQN paper
+# risk-related configurations
+alpha_risk: 1.
+alpha_risk_static: False
+risk_level_range: 10
+alpha_risk_decay: False
+# attention related configurations
+attend_heads: 1
+# attent network
+# v0, outputs all action distribution risk level of each agent, v1: outputs identical risk level of each agent
+atten_net: "v2"  # v0, v1, v2,
+
+name: "rmix_v2_9"  # full distribution update, name is the same as rmix_v2_9
+
+# for debug purposes
+save_cvar: False
+# save save_risk_level
+save_risk_level: True
+risk_neutral: False  # discard
+
+# version
+version: 'v2'  # v1, v2,
